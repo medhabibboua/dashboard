@@ -1,0 +1,51 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/admindashboard.sol": "AdminDashboard"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/admindashboard.sol": {
+			"keccak256": "0x70d78a2613b4ddd82ddd71014fc1fdb0d2dc4670a534ceb4eb73b565c26bc9e3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4f71ebd784660f2aff6dd9ebe4a1980750676cc9f27302f83c1cb1cf5d00516e",
+				"dweb:/ipfs/QmV7EvyXDo1MsjVDy3ppQn1E6z2qN5Pi2Vf4dTWiZ3PA7m"
+			]
+		}
+	},
+	"version": 1
+}
