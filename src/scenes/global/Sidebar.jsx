@@ -12,6 +12,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -124,19 +125,13 @@ const Sidebar = () => {
             
             
             <Item
-              title="Calendar"
-              to="/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
+              title="Instructors"
+              to="/instructors"
+              icon={<AccountCircleIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="FAQ Page"
-              to="/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+        
 
             <Typography
               variant="h6"
@@ -159,14 +154,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Line Chart"
-              to="/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            
+       
           </Box>
         </Menu>
       </ProSidebar>

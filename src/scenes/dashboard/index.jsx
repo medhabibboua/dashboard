@@ -9,11 +9,12 @@ import TrafficIcon from "@mui/icons-material/Traffic";
 
 
 import Calendar from "../calendar/calendar";
-import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import BarChart from "../../components/BarChart";
-import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
+import Header from "../../components/shared/Header";
+import Piechart from "../../components/shared/PieChart";
+import BarChart from "../../components/shared/BarChart";
+import StatBox from "../../components/shared/StatBox";
+import ProgressCircle from "../../components/shared/ProgressCircle";
+import { PieChart } from "@mui/icons-material";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -165,7 +166,7 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <Piechart isDashboard={true} />
           </Box>
         </Box>
         <Box

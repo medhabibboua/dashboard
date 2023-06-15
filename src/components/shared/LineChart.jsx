@@ -1,12 +1,47 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
-import { tokens } from "../theme";
-import { mockLineData as data } from "../data/mockData";
-
+import { tokens } from "../../theme";
+//import { mockLineData as data } from "../data/mockData";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/course/get-all');
+        const fetchedData = response.data.courses.map((item) => ({
+          id: item.courseId,
+          color: colors.grey[100], // Set a default color if needed
+          data: [
+            {
+              x: item.title,
+              y: item.nbBuyers,
+            },
+           
+          ],
+        }));
+        setChartData(fetchedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  
   return (
     <ResponsiveLine
       data={data}

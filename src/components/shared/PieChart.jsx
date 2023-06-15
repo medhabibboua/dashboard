@@ -1,15 +1,64 @@
 import { ResponsivePie } from "@nivo/pie";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
-import { mockPieData as data } from "../data/mockData";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import ClassicLoader from "../loader/loader";
 
 const PieChart = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+const getValue=(value,currency)=>{
+  console.log(currency)
+  if(String(currency).toLowerCase()==="usd"){
+    return String(value) +" $"
+  }else if(String(currency).toLowerCase()==="eur"){
+    return String(value) +" €"
+  }else {
+    return String(value) +" TD"
+  }
+}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/course/get-all"
+        );
+        const fetchedData = response.data.courses.map((item) => ({
+        
+            id: item.title,
+            label: item.title,
+            value: item.nbBuyers ,
+            currency:item.coursePriceCurrency          })
+        );
+        setChartData(fetchedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+
   return (
-    <ResponsivePie
+    <>
+ {isLoading ?<ClassicLoader type="indigo"/>: <ResponsivePie
       data={data}
+      tooltip={({ datum }) => (
+        <div>
+          <strong>{datum.id}</strong>
+          <div>{`${getValue(datum.value, datum.currency)} units`}</div>
+        </div>
+      )}
       theme={{
+        fontSize: 20,
         axis: {
           domain: {
             line: {
@@ -37,6 +86,7 @@ const PieChart = () => {
           },
         },
       }}
+    
       margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
       innerRadius={0.5}
       padAngle={0.7}
@@ -50,7 +100,7 @@ const PieChart = () => {
       arcLinkLabelsTextColor={colors.grey[100]}
       arcLinkLabelsThickness={2}
       arcLinkLabelsColor={{ from: "color" }}
-      enableArcLabels={false}
+      enableArcLabels={true}
       arcLabelsRadiusOffset={0.4}
       arcLabelsSkipAngle={7}
       arcLabelsTextColor={{
@@ -102,7 +152,8 @@ const PieChart = () => {
           ],
         },
       ]}
-    />
+    />}
+    </>
   );
 };
 

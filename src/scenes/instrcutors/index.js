@@ -8,11 +8,27 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { id } from "ethers";
 import ClassicLoader from "../../components/loader/loader";
-const Courses = () => {
+const Instructors = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+
+  function removeDuplicatesByEthAddress(array) {
+    const uniqueEthAddresses = {};
+    
+    // Filter out duplicate objects
+    const filteredArray = array.filter(obj => {
+      if (!uniqueEthAddresses[obj.ethAddress]) {
+        uniqueEthAddresses[obj.ethAddress] = true;
+        return true;
+      }
+      return false;
+    });
+  
+    return filteredArray;
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,27 +37,60 @@ const Courses = () => {
           "http://localhost:3000/api/course/get-all"
         );
         const fetchedData = await Promise.all(
-          response.data.courses.map(async (item) => {
+          response.data.courses.map(async (item,index) => {
             const profile = await axios.get(
               `http://localhost:3000/api/profile/get-by-ethaccount?account=${item.instructorEthAccount}`
             );
-            return {
-              id: item.courseId,
-              title: item.title,
-              address: item.instructorEthAccount,
-              price: item.coursePrice,
-              instructorName:
-                profile.data.profile.firstName +
-                " " +
-                profile.data.profile.lastName,
-              currency: item.coursePriceCurrency,
-              qtysells: item.nbBuyers,
-              total: item.nbBuyers * item.coursePrice,
-              //paymentType:
-            };
+            const paycheck = await axios.get(
+              `http://localhost:3000/api/paycheck-type/get?account=${item.instructorEthAccount}`
+            );
+            if (!!paycheck.data.paycheck) {
+              if (paycheck.data.paycheck.paymentType === "eth") {
+                return {
+                    id:index,
+                  instructorName:
+                    profile.data.profile.firstName +
+                    " " +
+                    profile.data.profile.lastName,
+                  paymentType: paycheck.data.paycheck.paymentType,
+                  ethAddress: item.instructorEthAccount,
+                  cardNumber: "unknown",
+                  expDate: "unknown",
+                  cvcCvv: "unknown",
+                };
+              } else {
+                return {
+                    id:index,
+
+                  instructorName:
+                    profile.data.profile.firstName +
+                    " " +
+                    profile.data.profile.lastName,
+                  paymentType: paycheck.data.paycheck.paymentType,
+                  ethAddress: item.instructorEthAccount,
+                  cardNumber: paycheck.data.paycheck.cardNumber,
+                  expDate: paycheck.data.paycheck.cardExpDate,
+                  cvcCvv: paycheck.data.paycheck.cardCvcCvv,
+                };
+              }
+            } else {
+              return {
+                id:index,
+
+                instructorName:
+                  profile.data.profile.firstName +
+                  " " +
+                  profile.data.profile.lastName,
+                paymentType: "pending",
+                ethAddress: item.instructorEthAccount,
+                cardNumber: "unknown",
+                expDate: "unknown",
+                cvcCvv: "unknown",
+              };
+            }
           })
         );
-        setData(fetchedData);
+        setData(removeDuplicatesByEthAddress(fetchedData));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -52,8 +101,7 @@ const Courses = () => {
   }, []);
 
   const columns = [
-    { field: "id", headerName: "Course Id", flex: 0.5 },
-    { field: "title", headerName: "Title" },
+    { field: "id", headerName: "Id", flex: 0.5 },
     {
       field: "instructorName",
       headerName: "Instructor Name",
@@ -61,30 +109,29 @@ const Courses = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "address",
-      headerName: "Instructor Eth Address",
+      field: "paymentType",
+      headerName: "Payment Type",
       flex: 1,
     },
     {
-      field: "price",
-      headerName: " Course Price",
+      field: "ethAddress",
+      headerName: " Eth Address",
       flex: 1,
     },
     {
-      field: "currency",
-      headerName: "Price Currency",
+      field: "cardNumber",
+      headerName: "Card Number",
       flex: 1,
     },
 
     {
-      field: "qtysells",
-      headerName: "Qtysells",
-      type: "number",
+      field: "expDate",
+      headerName: "Expiry Date",
       flex: 1,
     },
     {
-      field: "total",
-      headerName: "Total Sales",
+      field: "cvcCvv",
+      headerName: "CVC/CVV",
       flex: 1,
     },
   ];
@@ -96,16 +143,15 @@ const Courses = () => {
       ) : (
         <Box m="20px">
           <Header
-            title="courses"
-            subtitle="List of Courses for Future Reference"
+            title="Istructors"
+            subtitle="List of Instructors for Future Reference"
           />
           <Box
             m="40px 0 0 0"
             height="75vh"
             sx={{
-           
               "& .MuiDataGrid-root": {
-                fontSize:"20px",
+                fontSize: "20px",
                 border: "none",
               },
               "& .MuiDataGrid-cell": {
@@ -145,4 +191,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default Instructors;
