@@ -2,10 +2,11 @@ import { useState } from "react";
 import { TextField, Button, Grid, Box, Typography } from "@mui/material";
 import makeStyles from "@emotion/styled";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth";
-
+import { useEffect } from "react";
+import ClassicLoader from "../loader/loader";
 
 const useStyles = makeStyles({
   container: {
@@ -30,28 +31,34 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login,isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const classes = useStyles();
+  const [isLoading,setIsLoading]=useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    let responseData;
-  try {
-      responseData = await axios.post("http://localhost:3000/api/admin/login",{
-        username: email,
-        password: password,
+    //let responseData;
+    try {
+      setIsLoading(true)
+      const responseData = await axios.post("http://127.0.0.1:3000/api/admin/login", {
+        username: "laziz",
+        password: "123"
       });
+      console.log(responseData.headers);
       login(responseData.data.user._id, responseData.data.token);
+      navigate("/");
+      setIsLoading(false)
+
     } catch (err) {
       console.log(err);
       setError("Invalid email or password");
     }
-
   };
 
   return (
     <Box className={classes.container}>
-      <div className={classes.form}>
+      <form onSubmit={handleSubmit} className={classes.form}>
         <Typography variant="h5" gutterBottom>
           Admin Login
         </Typography>
@@ -61,6 +68,7 @@ function Login() {
               fullWidth
               label="Email"
               type="text"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
@@ -69,24 +77,24 @@ function Login() {
               fullWidth
               label="Password"
               type="password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </Grid>
           <Grid item xs={12}>
             <Button
               fullWidth
-            onClick={handleSubmit}
+              type="submit"
               variant="contained"
               color="primary"
-              type="button"
               className={classes.submitButton}
             >
-              Log In
+             {isLoading ?<ClassicLoader type="white"/>:"LogIn"}
             </Button>
           </Grid>
           {error && <p>{error}</p>}
         </Grid>
-      </div>
+      </form>
     </Box>
   );
 }
